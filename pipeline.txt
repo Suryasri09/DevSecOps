@@ -15,22 +15,22 @@ pipeline {
         }
         stage('Checkout from Git') {
             steps {
-                git branch: 'main', url: '<URL>'
+                git branch: 'main', url: 'https://github.com/Suryasri09/DevSecOps.git'
             }
         }
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar-server') {
                     sh ''' 
-                    $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=Netflix
-                    '''
+                    $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectname=Netflix \
+                    -Dsonar.projectKey=netflix'''
                 }
             }
         }
         stage('Quality Gate') {
             steps {
                 script {
-                    waitForQualityGate abortPipeline
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
                 }
             }
         }
